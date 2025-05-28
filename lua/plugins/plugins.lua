@@ -1,5 +1,14 @@
 return {
-	{ "ellisonleao/gruvbox.nvim", priority = 1000 , config = true, opts = ...},
+	{
+		"ellisonleao/gruvbox.nvim",
+		priority = 1000,
+		config = true,
+		opts = ...
+	},
+
+	{
+		"rebelot/kanagawa.nvim"
+	},
 
 	{
 		"nvim-tree/nvim-tree.lua",
@@ -50,6 +59,17 @@ return {
 
 	{
 		"saadparwaiz1/cmp_luasnip"
+	},
+
+	{
+		"nvim-treesitter/nvim-treesitter",
+		branch = 'master',
+		lazy = false,
+		build = ":TSUpdate"
+	},
+
+	{
+		"hiphish/rainbow-delimiters.nvim"
 	},
 
 	-- Brackets --

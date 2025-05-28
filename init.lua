@@ -214,6 +214,14 @@ require("nvim-tree").setup({
 	hijack_netrw = true,
 	hijack_cursor = true,
 	hijack_unnamed_buffer_when_opening = false,
+	update_focused_file = {
+		enable = true,
+		update_root = {
+			enable = true,
+			ignore_list = {},
+		},
+		exclude = false,
+	},
 	view = {
 		float = {
 			enable = true,
@@ -402,8 +410,12 @@ require("lspconfig")["clangd"].setup {
 	capabilities = capabilities,
 	filetypes = { "c", "cpp", "cc", "objc", "objcpp", "cuda", "proto", "h", "hpp", "hh" },
 	init_options = {
-		fallbackFlags = {"--std=c++23"}
+		fallbackFlags = {"--std=c++23"},
 	},
+	cmd = {
+		"clangd",
+		"--query-driver=\"C:\\Program Files\\w64devkit\\bin\\g++.exe\""
+	}
 }
 
 -- JAVA --
@@ -427,6 +439,30 @@ require("lspconfig")["rust_analyzer"].setup {
 			},
 		},
 	},
+}
+
+-- PYTHON --
+require("lspconfig")["pyright"].setup {
+	settings = {
+		python = {
+			analysis = {
+				typeCheckingMode = "off"
+			}
+		}
+	}
+}
+
+require("nvim-treesitter.configs").setup {
+  ensure_installed = { "python", "cpp" },
+  highlight = {
+    enable = true
+    -- additional_vim_regex_highlighting = false, -- disables old syntax engine
+  },
+  rainbow = {
+    enable = true,
+    extended_mode = true,
+    max_file_lines = nil,
+  }
 }
 
 -- Errors on hover --
@@ -458,3 +494,15 @@ vim.keymap.set({"n", "i", "v"}, "<C-p>", function() vim.diagnostic.open_float() 
 vim.diagnostic.config({
 	update_in_insert = true
 })
+
+vim.api.nvim_create_autocmd("BufEnter", {
+	pattern = "*",
+	callback = function()
+		vim.cmd("silent! lcd " .. vim.fn.expand("%:p:h"))
+	end,
+})
+
+-- Tab to indent right in visual mode
+vim.api.nvim_set_keymap('v', '<Tab>', '>gv', { noremap = true, silent = true })
+-- Shift-Tab to indent left in visual mode
+vim.api.nvim_set_keymap('v', '<S-Tab>', '<gv', { noremap = true, silent = true })
