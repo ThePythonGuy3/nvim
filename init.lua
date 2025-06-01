@@ -270,7 +270,6 @@ require("nvim-tree").setup({
 	},
 })
 
-
 -- Open NVIM TREE --
 vim.cmd(":NvimTreeOpen")
 vim.schedule(function()
@@ -349,12 +348,13 @@ require("lualine").setup()
 
 -- LSP --
 local cmp = require("cmp")
+local luasnip = require("luasnip")
 
 cmp.setup({
 	snippet = {
 		-- REQUIRED - you must specify a snippet engine
 		expand = function(args)
-			require("luasnip").lsp_expand(args.body)
+			luasnip.lsp_expand(args.body)
 		end,
 	},
 	window = {
@@ -367,6 +367,20 @@ cmp.setup({
 		["<C-Space>"] = cmp.mapping.complete(),
 		["<C-e>"] = cmp.mapping.abort(),
 		["<CR>"] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
+		["<Tab>"] = cmp.mapping(function(fallback)
+			if cmp.visible() then
+				cmp.select_next_item()
+			else
+				fallback()
+			end
+		end, { "i" }),
+		["<S-Tab>"] = cmp.mapping(function(fallback)
+			if cmp.visible() then
+				cmp.select_prev_item()
+			else
+				fallback()
+			end
+		end, { "i" }),
 	}),
 	sources = cmp.config.sources(
 		{
@@ -378,6 +392,14 @@ cmp.setup({
 		}
 	)
 })
+
+vim.keymap.set("i", "<Esc>", function()
+	if cmp.visible() then
+		cmp.close()
+	else
+		vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Esc>", true, false, true), "n", false)
+	end
+end, { noremap = true, silent = true })
 
 -- Use buffer source for `/` and `?` (if you enabled `native_menu`, this won"t work anymore).
 cmp.setup.cmdline({ "/", "?" }, {
